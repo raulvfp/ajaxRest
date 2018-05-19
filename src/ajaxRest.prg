@@ -97,7 +97,7 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	ENDFUNC
 
 	*----------------------------------------------------------------------------*
-	PROTECTED FUNCTION SEND
+	FUNCTION SEND
 	* Realiza la conexion con el servidor.
 	*----------------------------------------------------------------------------*
 		LOCAL loXMLHTTP AS "MSXML2.XMLHTTP", lcMessage,;

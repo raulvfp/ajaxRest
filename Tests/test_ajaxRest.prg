@@ -55,6 +55,24 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		SET DEFAULT TO   (THIS.oldDefault)
 	ENDFUNC
 
+	*--------------------------------------------------------------------
+	FUNCTION testGet_with_Header_and_Parameters
+	* Note: Ejemplo de uso de metodo GET con Header & Parameters
+	*--------------------------------------------------------------------
+		LOCAL lcExpectedValue, lcResponseValue
+		lcExpectedValue = '{"result":"Prueba vfp9"}'
+		lcResponseValue = ''
+		THIS.oObject.urlRequest = 'https://www.purgomalum.com/service/json'
+		THIS.oObject.method     = 'GET'
+		THIS.oObject.addHeader("Content-Type", 'application/json')
+		THIS.oObject.addParameters("text", 'Prueba%20vfp9')
+
+		lcResponseValue = THIS.oObject.SEND()
+		THIS.AssertEquals(lcExpectedValue, lcResponseValue,'Error el resultado no es deseado')
+		THIS.MessageOut('Valor recibido: '+lcResponseValue)
+	ENDFUNC
+
+
 ENDDEFINE
 *----------------------------------------------------------------------
 * The three base class methods to call from your test methods are:
