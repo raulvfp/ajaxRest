@@ -1,0 +1,60 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="fxupersistgettemplate" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="userid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="setting">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<fxupersistgettemplate>
+		<userid>Admin</userid>
+		<setting>THIS.Top = 13</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Admin</userid>
+		<setting>THIS.Left = 56</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Admin</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,431,431)</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Admin</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,638,638)</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Admin</userid>
+		<setting>THIS.chkProcedure.Value = .F.</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Admin</userid>
+		<setting>THIS.chkTab.Value = .T.</setting>
+	</fxupersistgettemplate>
+	<fxupersistgettemplate>
+		<userid>Admin</userid>
+		<setting>THIS.lstTemplates.Value = 3</setting>
+	</fxupersistgettemplate>
+</VFPData>

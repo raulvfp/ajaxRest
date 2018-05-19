@@ -1,0 +1,38 @@
+########## Visual Foxpro ##########
+# Created by socktoaster-ui
+#
+# Author: raul.jrz@gmail.com
+# Url: http://socktoaster.io
+##################################
+
+# Links
+vfp9.lnk
+*.lnk
+
+# Archivos temporales de Fox
+*.bak
+*.fxp
+*.err
+*.tmp
+*.log
+
+*.cdx
+*.dbf
+*.ftp
+*.pjt
+*.pjx
+
+# Archivos ejecutables
+*.exe
+*.dll
+*.com
+*.app
+
+
+# Archivos comprimidos
+*.rar
+*.zip
+*.7z
+
+# Carpetas que no deben controlarse
+/folder/

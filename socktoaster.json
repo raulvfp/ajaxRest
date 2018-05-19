@@ -1,0 +1,22 @@
+{
+	"name": "raulvfp/ajaxRest",
+	"description": "Permite la conexion a WebServices mediante los HTTP verbs. Servicios XML/jSon/txt etc",
+	"authors": [
+		{
+			"name": "Raúl Juárez",
+			"email": "raul.jrz@gmail.com",
+			"homepage": "http://rauljrz.github.io/",
+			"role": "Developer"
+		}
+	],
+	"version": "2.1.0",
+	"require": {
+		"vfp": "^9.00",
+	},
+	"repositories": [
+		{
+			"type": "socktoaster",
+			"url": "http://www.socktoaster.com"
+		}
+	]
+}
