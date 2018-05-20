@@ -24,29 +24,23 @@ DEFINE CLASS ajaxRest AS CUSTOM
 
 	*----------------------------------------------------------------------------*
 	FUNCTION INIT
-	*
+	* Inicio el objeto creando dos Objetos EMTPY uno para los HEADER y otro para los
+	* PARAMETERS.
+	* Ademas defino Headers por default, pero que luego el programador puede cambiar
 	*----------------------------------------------------------------------------*
 		THIS.loParameter= CREATEOBJECT('empty')
 		THIS.loHeader   = CREATEOBJECT('empty')
 
 		*-- Valores por default --*
 		THIS.addHeader("Content-Type" ,'application/x-www-form-urlencoded')
-		THIS.addHeader("authorization",'')
 		THIS.addHeader("HttpVersion"  ,'1.1')
 		THIS.addHeader("UserAgent"    ,'FoxPro/9.0')
-	ENDFUNC
-	
-	*----------------------------------------------------------------------------*
-	FUNCTION authorization_Assign(teValue)
-	*
-	*----------------------------------------------------------------------------*
-		THIS.addHeader("authorization",teValue)
-		THIS.authorization = teValue
 	ENDFUNC
 
 	*----------------------------------------------------------------------------*
 	FUNCTION method_Assign(teValue)
-	*
+	* Este metodo ASSIGN me permite validar lo que el verbo HTTP que se usara 
+	* para comunicarse con el servidor REST
 	*----------------------------------------------------------------------------*
 		LOCAL lcListMethod
 		TRY
@@ -66,15 +60,16 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	*----------------------------------------------------------------------------*
 		LOCAL lcKey
 		TRY
-			lcKey = '_'+STRCONV(tcKey,15)
+			&& lo combierto a Hexadecimal para evitar conflictos con caracteres 
+			&& en la definicion de propiedades del objeto VFP.
+			lcKey = '_'+STRCONV(tcKey,15)             
 			IF PEMSTATUS(THIS.loHeader, lcKey, 5) THEN
 				THIS.loHeader.&lcKey = tcValue
 			ELSE
 				ADDPROPERTY(THIS.loHeader, lcKey, tcValue)
 			ENDIF
 		CATCH TO loEx
-			*			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
-			THROW
+			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
 		ENDTRY
 	ENDFUNC
 
@@ -84,6 +79,8 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	*----------------------------------------------------------------------------*
 		LOCAL lcKey
 		TRY
+			&& lo combierto a Hexadecimal para evitar conflictos con caracteres 
+			&& en la definicion de propiedades del objeto VFP.
 			lcKey = '_'+STRCONV(tcKey,15)
 			IF PEMSTATUS(THIS.loHeader, lcKey, 5) THEN
 				THIS.loParameter.&lcKey = tcValue
@@ -91,8 +88,7 @@ DEFINE CLASS ajaxRest AS CUSTOM
 				ADDPROPERTY(THIS.loParameter, lcKey, tcValue)
 			ENDIF
 		CATCH TO loEx
-			*			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
-			THROW
+			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
 		ENDTRY
 	ENDFUNC
 
@@ -113,13 +109,13 @@ DEFINE CLASS ajaxRest AS CUSTOM
 					lcKey  = laProperties[lnInd]
 					lcParameter = lcParameter + STRCONV(lcKey, 16) +'='+THIS.loParameter.&lcKey + "&"
 				ENDFOR
-				lcParameter = SUBSTR(lcParameter,1,LEN(lcParameter)-1)
+				lcParameter = SUBSTR(lcParameter,1,LEN(lcParameter)-1)  &&le quito el ultomo "&"
 				IF !EMPTY(lcParameter) THEN
-					lcParameter = "?"+lcParameter
+					lcParameter = "?"+lcParameter                       &&Le agrego antes de los parametros el '?' 
 				ENDIF
 
+				*--- Abro la conexion ---*
 				.OPEN(THIS.method, THIS.urlRequest+lcParameter, .F.)
-
 				*--- Cargo el Header de la peticion --- *
 				lnCnt = AMEMBERS(laProperties, THIS.loHeader, 0)
 				FOR lnInd = 1 TO lnCnt
@@ -129,12 +125,13 @@ DEFINE CLASS ajaxRest AS CUSTOM
 				
 				.SEND(THIS.Body)
 				
-				lcMessage = .responseText
+				lcMessage = .responseText &&obtengo la repuesta
 			ENDWITH
 
 		CATCH TO loEx
-			*			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
-			THROW
+			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
+		FINALLY
+			loXMLHTTP = ''
 		ENDTRY
 		RETURN lcMessage
 	ENDFUNC
