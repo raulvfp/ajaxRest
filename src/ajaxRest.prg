@@ -22,6 +22,13 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	method         = ''
 	Body           = ''
 
+	*-- repuesta del servidor
+	readystate     = ''
+	responsebody   = ''
+	responseText   = ''
+	status         = ''
+	statustext     = ''
+
 	*----------------------------------------------------------------------------*
 	FUNCTION INIT
 	* Inicio el objeto creando dos Objetos EMTPY uno para los HEADER y otro para los
@@ -126,6 +133,11 @@ DEFINE CLASS ajaxRest AS CUSTOM
 				.SEND(THIS.Body)
 				
 				lcMessage = .responseText &&obtengo la repuesta
+				THIS.readystate = .readystate
+				THIS.responsebody=.responseBody
+				THIS.responseText=.responseText
+				THIS.status      =.status
+				THIS.statustext  =.statustext
 			ENDWITH
 
 		CATCH TO loEx

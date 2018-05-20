@@ -71,6 +71,7 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		lcResponseValue = THIS.oObject.SEND()
 		THIS.AssertEquals(lcExpectedValue, lcResponseValue,'Error el resultado no es deseado')
 		THIS.MessageOut('Valor recibido: '+lcResponseValue)
+		THIS.MessageOut('Valor de Status: '+TRANSFORM(THIS.oObject.status))
 	ENDFUNC
 
 	*--------------------------------------------------------------------
@@ -102,6 +103,7 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 
 		lcResponseValue = THIS.oObject.SEND()
 		THIS.MessageOut('Valor recibido: '+lcResponseValue)
+		THIS.MessageOut('Valor de Status: '+TRANSFORM(THIS.oObject.status))
 		THIS.AssertFalse(EMPTY(lcResponseValue),'Error no se recibio una devolucion')
 	ENDFUNC
 
@@ -119,6 +121,7 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 			THIS.MessageOut('Valor de userValue: '+loEx.UserValue)
 			THIS.AssertEquals(lcExpectedValue, loEx.UserValue, 'ERROR, se experaba otro valor')
 			THIS.AssertTrue(FILE(lcFileLog), 'Error, no se encontro el archivo log: '+lcFileLog)
+			THIS.MessageOut('Valor de Status: '+TRANSFORM(THIS.oObject.status))
 		ENDTRY
 	ENDFUNC
 
