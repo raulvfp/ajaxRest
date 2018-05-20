@@ -125,6 +125,24 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		ENDTRY
 	ENDFUNC
 
+	*--------------------------------------------------------------------
+	FUNCTION test_Error_URLNotExist
+	* Note:
+	*--------------------------------------------------------------------
+		LOCAL lcResponseValue
+		THIS.oObject.urlRequest = 'https://noexisteelsitio.com'
+		THIS.oObject.method     = 'POST'
+		THIS.oObject.addHeader  ("Content-Type", 'application/json')
+
+		TRY
+			lcResponseValue = THIS.oObject.SEND()
+			THIS.MessageOut('Valor recibido: '+lcResponseValue)
+			THIS.MessageOut('Valor de Status: '+TRANSFORM(THIS.oObject.status))
+		CATCH TO loEx
+			THIS.MessageOut('Valor de Status por el Erro: '+loEx.userValue)
+		ENDTRY
+	ENDFUNC
+
 
 ENDDEFINE
 *----------------------------------------------------------------------
