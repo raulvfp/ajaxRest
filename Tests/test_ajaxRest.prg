@@ -29,6 +29,7 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		*THIS.MessageOut('============================================================')
 
 		SET PROCEDURE TO (ADDBS(SYS(5)+CURDIR())+'src\ajaxRest.prg') ADDITIVE
+		SET PROCEDURE TO E:\Shared\Project\librery\catchException\src\catchException.prg ADDITIVE
 		SET PATH TO (THIS.oldPath +";"+ADDBS(SYS(5)+CURDIR())+'src ')
 		THIS.MessageOut('Procedures: '+STRTRAN(SET("PROCEDURE"),";",CHR(13)+SPACE(12)))
 		THIS.MessageOut('Path......: '+STRTRAN(SET("PATH"),";",CHR(13)+SPACE(12)))
@@ -102,6 +103,23 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		lcResponseValue = THIS.oObject.SEND()
 		THIS.MessageOut('Valor recibido: '+lcResponseValue)
 		THIS.AssertFalse(EMPTY(lcResponseValue),'Error no se recibio una devolucion')
+	ENDFUNC
+
+	*--------------------------------------------------------------------
+	FUNCTION test_catchExcepcion
+	* Note: Compruebo el correcto funcionamiento con la clase catchExcepcion
+	*--------------------------------------------------------------------
+		LOCAL lcExpectedValue, lcFileLog
+		lcExpectedValue = 'Error, el verbo no es el correcto'
+		lcFileLog = 'error.log'            && Es el archivo de salida con el log de la Exception
+		TRY
+			THIS.oObject.method = 'METODO_ERRONEO'
+		CATCH TO loEx
+			THIS.MessageOut('Esto me indica si es un error o algo generador por el programador: ' +loEx.Message)
+			THIS.MessageOut('Valor de userValue: '+loEx.UserValue)
+			THIS.AssertEquals(lcExpectedValue, loEx.UserValue, 'ERROR, se experaba otro valor')
+			THIS.AssertTrue(FILE(lcFileLog), 'Error, no se encontro el archivo log: '+lcFileLog)
+		ENDTRY
 	ENDFUNC
 
 
