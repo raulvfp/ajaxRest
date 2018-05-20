@@ -27,6 +27,10 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	responsebody   = ''
 	responseText   = ''
 	status         = 0
+	ResponseHeader = ''
+	ResponseCnType = ''  &&Es el valor de Content-Type por el webservice, que identifica si es un archivo o no
+	ResponseCnLeng = ''  &&Si es una archivo, aqui viene la longitud en byte. Ojo, es un nro en CARACTER
+
 *--     Estados
 *--     100-Continue              101-Switching protocols    200-OK
 *--     201-Created               202-Accepted               203-Non-Authoritative Information
@@ -77,6 +81,18 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	ENDFUNC
 
 	*----------------------------------------------------------------------------*
+	FUNCTION urlRequest_Assign(teValue)
+	* Este metodo ASSIGN me permite validar la URL ingresada
+	*----------------------------------------------------------------------------*
+		LOCAL lcListMethod
+		TRY
+			THIS.urlRequest = STRTRAN(teValue,'\/',"/")
+		CATCH TO loEx
+			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
+		ENDTRY
+	ENDFUNC
+
+	*----------------------------------------------------------------------------*
 	FUNCTION addHeader(tcKey, tcValue)
 	* Agrega un elemento al header
 	*----------------------------------------------------------------------------*
@@ -115,14 +131,57 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	ENDFUNC
 
 	*----------------------------------------------------------------------------*
+	FUNCTION createConnection
+	* Test with all XML Versions
+	* Can also apply the info from http://support.microsoft.com/kb/278674/en-us
+	* to determine what version of MSXML is installed in the machine
+	*----------------------------------------------------------------------------*
+		LOCAL loConnection
+		THIS.initResponse()
+		TRY
+			loConnection = CREATEOBJECT("MSXML2.ServerXMLHTTP.4.0") 
+		CATCH
+			TRY
+				loConnection = CREATEOBJECT("MSXML2.ServerXMLHTTP.3.0") 
+			CATCH
+				TRY
+					loConnection = CREATEOBJECT("MSXML2.ServerXMLHTTP.5.0") 
+				CATCH
+					TRY
+						loConnection = CREATEOBJECT("MSXML2.ServerXMLHTTP.6.0") 
+					CATCH
+						oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
+					ENDTRY
+				ENDTRY
+			ENDTRY
+		ENDTRY	
+		RETURN loConnection
+	ENDFUNC
+
+	*----------------------------------------------------------------------------*
+	PROTECTED FUNCTION initResponse
+	* Inicializo todas las propiedades que maneja el response 
+	*----------------------------------------------------------------------------*
+		THIS.readystate     = ''
+		THIS.responsebody   = ''
+		THIS.responseText   = ''
+		THIS.status         = 0
+		THIS.ResponseHeader = ''
+		THIS.ResponseCnType = ''  &&Es el valor de Content-Type por el webservice, que identifica si es un archivo o no
+		THIS.ResponseCnLeng = ''  &&Si es una archivo, aqui viene la longitud en byte. Ojo, es un nro en CARACTER
+	ENDFUNC
+
+	*----------------------------------------------------------------------------*
 	FUNCTION SEND
 	* Realiza la conexion con el servidor.
 	*----------------------------------------------------------------------------*
-		LOCAL loXMLHTTP AS "MSXML2.XMLHTTP", lcMessage,;
+		LOCAL loXMLHTTP, lcMessage,;
 			lcKey, lnCnt, lnInd
 		lcMessage = ''
+
+		loXMLHTTP = THIS.createConnection()
+		*	loXMLHTTP = CREATEOBJECT("MSXML2.XMLHTTP")
 		TRY
-			loXMLHTTP = CREATEOBJECT("MSXML2.XMLHTTP")
 			WITH loXMLHTTP AS MSXML2.XMLHTT
 				*--- Cargo los Parametros de la peticion --- *
 				lnCnt = AMEMBERS(laProperties, THIS.loParameter, 0)
@@ -136,7 +195,7 @@ DEFINE CLASS ajaxRest AS CUSTOM
 					lcParameter = "?"+lcParameter                       &&Le agrego antes de los parametros el '?' 
 				ENDIF
 
-				*--- Abro la conexion ---*
+				*--- Abro la conexion, enviando los parametros ---*
 				.OPEN(THIS.method, THIS.urlRequest+lcParameter, .F.)
 				*--- Cargo el Header de la peticion --- *
 				lnCnt = AMEMBERS(laProperties, THIS.loHeader, 0)
@@ -147,7 +206,16 @@ DEFINE CLASS ajaxRest AS CUSTOM
 				
 				.SEND(THIS.Body)
 				
-				lcMessage = .responseText &&obtengo la repuesta
+				*--- Determino que tipo de repuesta recibi ---*
+				THIS.ResponseHeader = .getAllResponseHeaders
+				THIS.ResponseCnType = THIS.getOneHeader('Content-Type: '  ) 
+				THIS.ResponseCnLeng = THIS.getOneHeader('Content-Length: ') &&Si es distinto de "" es un archivo.
+
+				IF VARTYPE(THIS.ResponseCnLeng)='C' AND LEN(THIS.ResponseCnLeng)>1 THEN
+					lcMessage = .ResponseBody
+				ELSE
+					lcMessage = .ResponseText &&obtengo la repuesta
+				ENDIF
 			ENDWITH
 
 		CATCH TO loEx
@@ -155,17 +223,34 @@ DEFINE CLASS ajaxRest AS CUSTOM
 		FINALLY
 			THIS.readystate  =loXMLHTTP.readystate
 			THIS.responsebody=loXMLHTTP.responseBody
-			THIS.responseText=loXMLHTTP.responseText
+			THIS.responseText=lcMessage
 			THIS.status      =loXMLHTTP.status
 			THIS.statustext  =loXMLHTTP.statustext
-			IF VARTYPE(loEx)='O' THEN
+
+			IF VARTYPE(loEx)='O' THEN  &&Si se produjo una excepcion, busco mostrar el status en el nivel superior
+				STRTOFILE(loXMLHTTP.getAllResponseHeaders, 'loghttp.log', 1)
 				loEx.userValue = '{"status": ' + TRANSFORM(THIS.status) ;
 								 +', "statustext": "'+THIS.statustext+'"';
 								 +'}'
-			ENDIF								
+			ENDIF
+
 			loXMLHTTP = NULL
 		ENDTRY
 		RETURN lcMessage
+	ENDFUNC
+
+	*----------------------------------------------------------------------------*
+	FUNCTION getOneHeader(tcFindHeader)
+	* Busca una de las propiedades recibidas por getAllResponseHeaders()
+	*----------------------------------------------------------------------------*
+		LOCAL lcOneHeader, lcAux1
+		lcOneHeader = ''
+		lnPos = AT(tcFindHeader,THIS.ResponseHeader)	&&Si es 0, no existe en la recepcion
+		IF lnPos>0 THEN
+			lcAux1 = ALLTRIM(SUBSTR(THIS.ResponseHeader,lnPos+LEN(tcFindHeader)))
+			lcOneHeader = SUBSTR(lcAux1,1,AT(CHR(13),lcAux1)-1)
+		ENDIF
+		RETURN lcOneHeader
 	ENDFUNC
 
 ENDDEFINE

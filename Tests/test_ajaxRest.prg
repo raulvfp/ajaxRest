@@ -127,7 +127,10 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 
 	*--------------------------------------------------------------------
 	FUNCTION test_Error_URLNotExist
-	* Note:
+	* Note: Pruebo lo que sucede cuando se consulta a una url que no existe
+	* La info de lo que sucede me llega por el objeto de la excepcion en 
+	* la propiedad userValue en formato json
+	*  ej:  {"status": 12007, "statustext": "Unknown"}
 	*--------------------------------------------------------------------
 		LOCAL lcResponseValue
 		THIS.oObject.urlRequest = 'https://noexisteelsitio.com'
@@ -141,6 +144,54 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		CATCH TO loEx
 			THIS.MessageOut('Valor de Status por el Erro: '+loEx.userValue)
 		ENDTRY
+	ENDFUNC
+
+	*--------------------------------------------------------------------
+	FUNCTION test_GET_recepciondeunaImagen
+	* Note: pruebo la recepcion de una image. La guardo en la carpeta 
+	* images
+	* Del primer GET, recibo un json con una direccion randon de la imagen a descargar.
+	*     {"image":"http:\/\/randomfox.ca\/images\/59.jpg","link":"http:\/\/randomfox.ca\/?i=59"}
+	* El segundo GET, descarga la imagen.
+	*--------------------------------------------------------------------
+		LOCAL lcResponseValue
+		lcResponseValue = ''
+		*--- Primera peticion, para obtener un nombre de archivo al azar
+		THIS.oObject.urlRequest = 'https://randomfox.ca/floof/'
+		THIS.oObject.method     = 'GET'
+		THIS.oObject.addHeader  ("Content-Type", 'application/json')
+
+		TRY
+			lcResponseValue = THIS.oObject.SEND()
+		CATCH TO loEx
+			THIS.MessageOut('Valor de Status por el Error: '+loEx.userValue)
+		ENDTRY
+
+		THIS.MessageOut('Valor recibido: '+lcResponseValue)
+		THIS.MessageOut('Valor de Status: '+TRANSFORM(THIS.oObject.status))
+
+		*-- Segunda peticion, para descargar el archivo.
+		lcURLImagen = SUBSTR(lcResponseValue,AT('"http',lcResponseValue)+1,;
+											 AT('","link":',lcResponseValue)-AT('"http',lcResponseValue)-1)
+		*lcURLImagen = STRTRAN(lcURLImagen,'\/',"/")
+		lcURLImagen = STRTRAN(lcURLImagen,'http:','https:')
+		THIS.MessageOut('Imagen a descargar: '+lcURLImagen)
+
+		lcResponseValue = ''
+		THIS.oObject.urlRequest = lcURLImagen
+		THIS.oObject.method     = 'GET'
+		THIS.oObject.addHeader  ("Content-Type", 'text/html')
+		THIS.oObject.addHeader  ('accept', "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
+
+		TRY
+			lcResponseValue = THIS.oObject.SEND()
+		CATCH TO loEx
+			THIS.MessageOut('Valor de Status por el Error: '+loEx.userValue)
+		ENDTRY
+
+		STRTOFILE(lcResponseValue,'images\'+JUSTFNAME(lcURLImagen))
+		THIS.MessageOut('Valor recibido: '+lcResponseValue)
+		THIS.MessageOut('Valor de Status: '+TRANSFORM(THIS.oObject.status))
 	ENDFUNC
 
 
