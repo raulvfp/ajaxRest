@@ -1,0 +1,196 @@
+<?xml version = "1.0" encoding="Windows-1252" standalone="yes"?>
+<VFPData>
+	<xsd:schema id="VFPData" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:element name="VFPData" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="foxunitpersist" minOccurs="0" maxOccurs="unbounded">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="userid">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="10"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+								<xsd:element name="setting">
+									<xsd:simpleType>
+										<xsd:restriction base="xsd:string">
+											<xsd:maxLength value="2147483647"/>
+										</xsd:restriction>
+									</xsd:simpleType>
+								</xsd:element>
+							</xsd:sequence>
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+				<xsd:anyAttribute namespace="http://www.w3.org/XML/1998/namespace" processContents="lax"/>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.Top = 63</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.Left = 261</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.Height = IIF(VERSION(5)&gt;=900,649,480)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1017,803)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.inZoomTop = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.inZoomLeft = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.inZoomHeight = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.inZoomWidth = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.inZoomWindowState = 0</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.ActivePage = 2</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.grdTests.FontName = "Tahoma"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.grdTests.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.grdTests.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.grdTests.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontName = "Courier New"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.edtFailuresAndErrors.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontName = "Arial"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontBold = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontName = "Courier New"</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontSize = 9</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontBold = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.pgfDetails.pgMessages.edtMessages.FontItalic = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.ilLargeGrid=.F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.grdTests.COLUMN1.Width = 208</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.grdTests.COLUMN2.Width = 760</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>SET ORDER TO TAG TCLOC IN (THIS.icGridRS)</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>=SEEK("TEST_AJAXREST                                                                                                 TESTPOST_WITH_HEADER_AND_BODY_USING_JSON                                                                                          ",THIS.icGridRS,"TCLName")</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.ilAllowDebug = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.ShowTips = .T.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.ilHonorTestPrefix = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.ilReloadTestsOnRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.ilCloseDebuggerAtEndOfTestsRun = .F.</setting>
+	</foxunitpersist>
+	<foxunitpersist>
+		<userid>Admin</userid>
+		<setting>THIS.nSplitterPosition = 226</setting>
+	</foxunitpersist>
+</VFPData>

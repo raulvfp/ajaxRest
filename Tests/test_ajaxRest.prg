@@ -72,6 +72,39 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		THIS.MessageOut('Valor recibido: '+lcResponseValue)
 	ENDFUNC
 
+	*--------------------------------------------------------------------
+	FUNCTION testPost_with_Header_and_Body_using_json
+	* Note: A continuación detallo el POST solicitado según la doc de dropbox 
+	*
+	* POST /2/files/list_folder
+	* Host: https://api.dropboxapi.com
+	* User-Agent: api-explorer-client
+	* Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d
+	* Content-Type: application/json
+	* {
+	*     "path": ""
+	* }
+	*--------------------------------------------------------------------
+		LOCAL lcExpectedValue, lcResponseValue
+		lcExpectedValue = ''
+		lcResponseValue = ''
+
+		THIS.oObject.urlRequest = 'https://api.dropboxapi.com/2/files/list_folder'
+		THIS.oObject.method     = 'POST'
+		THIS.oObject.addHeader   ("HttpVersion"  ,'1.1')
+		THIS.oObject.addHeader   ("Content-Type", 'application/json')
+		THIS.oObject.addHeader   ("authorization", 'Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d')
+		TEXT TO THIS.oObject.Body PRETEXT 15 TEXTMERGE NOSHOW
+{
+	"path":"",
+	"recursive":false
+}
+		ENDTEXT		
+
+		lcResponseValue = THIS.oObject.SEND()
+		THIS.MessageOut('Valor recibido: '+lcResponseValue)
+	ENDFUNC
+
 
 ENDDEFINE
 *----------------------------------------------------------------------
