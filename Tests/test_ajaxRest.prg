@@ -65,8 +65,8 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		lcResponseValue = ''
 		THIS.oObject.urlRequest = 'https://www.purgomalum.com/service/json'
 		THIS.oObject.method     = 'GET'
-		THIS.oObject.addHeader("Content-Type", 'application/json')
-		THIS.oObject.addParameters("text", 'Prueba%20vfp9')
+		THIS.oObject.addHeader   ("Content-Type", 'application/json')
+		THIS.oObject.addParameter("text", 'Prueba%20vfp9')
 
 		lcResponseValue = THIS.oObject.SEND()
 		THIS.AssertEquals(lcExpectedValue, lcResponseValue,'Error el resultado no es deseado')
@@ -108,7 +108,7 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 	ENDFUNC
 
 	*--------------------------------------------------------------------
-	FUNCTION test_catchExcepcion
+	FUNCTION test_catchExcepcion_MetodoErroneo
 	* Note: Compruebo el correcto funcionamiento con la clase catchExcepcion
 	*--------------------------------------------------------------------
 		LOCAL lcExpectedValue, lcFileLog
@@ -126,7 +126,7 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 	ENDFUNC
 
 	*--------------------------------------------------------------------
-	FUNCTION test_Error_URLNotExist
+	FUNCTION test_catchExcepcion_URLNotExist
 	* Note: Pruebo lo que sucede cuando se consulta a una url que no existe
 	* La info de lo que sucede me llega por el objeto de la excepcion en 
 	* la propiedad userValue en formato json
@@ -173,16 +173,13 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		*-- Segunda peticion, para descargar el archivo.
 		lcURLImagen = SUBSTR(lcResponseValue,AT('"http',lcResponseValue)+1,;
 											 AT('","link":',lcResponseValue)-AT('"http',lcResponseValue)-1)
-		*lcURLImagen = STRTRAN(lcURLImagen,'\/',"/")
 		lcURLImagen = STRTRAN(lcURLImagen,'http:','https:')
 		THIS.MessageOut('Imagen a descargar: '+lcURLImagen)
 
 		lcResponseValue = ''
 		THIS.oObject.urlRequest = lcURLImagen
 		THIS.oObject.method     = 'GET'
-		THIS.oObject.addHeader  ("Content-Type", 'text/html')
-		THIS.oObject.addHeader  ('accept', "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
-
+		
 		TRY
 			lcResponseValue = THIS.oObject.SEND()
 		CATCH TO loEx
@@ -194,6 +191,28 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		THIS.MessageOut('Valor de Status: '+TRANSFORM(THIS.oObject.status))
 	ENDFUNC
 
+
+	*--------------------------------------------------------------------
+	FUNCTION testGET_OneCatJPG_usingParameters
+	* Note: Test de envio de parametros para obtener una imagen
+	*--------------------------------------------------------------------
+		LOCAL lcResponseValue
+		lcResponseValue = ''
+		*--- Primera peticion, para obtener un nombre de archivo al azar
+		THIS.oObject.method      = 'GET'
+		THIS.oObject.urlRequest  = 'http://thecatapi.com/api/images/get'
+		THIS.oObject.addParameter('format'          ,'src')
+		THIS.oObject.addParameter('results_per_page','1')
+		
+		TRY
+			lcResponseValue = THIS.oObject.SEND()
+		CATCH TO loEx
+			THIS.MessageOut('Valor de Status por el Error: '+loEx.userValue)
+		ENDTRY
+
+		lcNameFile = "cat"+SYS(3)+".jpg"
+		STRTOFILE(lcResponseValue,'images\'+lcNameFile)
+	ENDFUNC
 
 ENDDEFINE
 *----------------------------------------------------------------------

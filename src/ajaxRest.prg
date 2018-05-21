@@ -15,7 +15,8 @@
 DEFINE CLASS ajaxRest AS CUSTOM
 *
 *-----------------------------------------------------------------------------------*
-	PROTECTED loHeader, loParameter
+	PROTECTED loHeader, loParameter, TypeNotArchive
+	TypeNotArchive = ''  &&Content-Type que no son tratados como archivos.
 	loHeader       = ''
 	bRelanzarThrow = .T. &&Relanza la excepcion al nivel superior
 	urlRequest     = ''
@@ -61,6 +62,86 @@ DEFINE CLASS ajaxRest AS CUSTOM
 		THIS.addHeader("Content-Type" ,'application/x-www-form-urlencoded')
 		THIS.addHeader("HttpVersion"  ,'1.1')
 		THIS.addHeader("UserAgent"    ,'FoxPro/9.0')
+		THIS.TypeNotArchive = 'application/json,text/plain'
+
+		TEXT TO loTiposdeMime NOSHOW 
+		*-- Tipos de Content-Type --*
+		*-- https://developer.mozilla.org/es/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+Type	Description	Example of typical                                                  subtypes
+----    ------------------------------                                                  --------
+text	Represents any document that contains text and is theoretically human readable	text/plain, text/html, 
+                                                                                        text/css,   text/javascript
+image	Represents any kind of images.                                                  image/gif,  image/png, 
+                                                                                        image/jpeg, image/bmp
+audio	Represents any kind of audio files	                                            audio/midi, audio/mpeg,
+                                                                                        audio/webm, audio/ogg
+video	Represents any kind of video files	                                            video/webm, video/ogg
+application	Represents any kind of binary data.	                                        application/octet-stream, 
+                                                                                        application/pkcs12, 
+                                                                                        application/vnd.mspowerpoint
+		*--
+		Extensión	Tipo de documento                           Tipo de MIME
+		---------   -----------------                           ------------
+			.aac	AAC audio file	                            audio/aac
+			.abw	AbiWord document                            application/x-abiword
+			.arc	Archive document (multiple files embedded)	application/octet-stream
+			.avi	AVI: Audio Video Interleave	                video/x-msvideo
+			.azw	Amazon Kindle eBook format	                application/vnd.amazon.ebook
+			.bin	Any kind of binary data	                    application/octet-stream
+			.bz	    BZip archive	                            application/x-bzip
+			.bz2	BZip2 archive	                            application/x-bzip2
+			.csh	C-Shell script	                            application/x-csh
+			.css	Cascading Style Sheets (CSS)	            text/css
+			.csv	Comma-separated values (CSV)	            text/csv
+			.doc	Microsoft Word	                            application/msword
+			.epub	Electronic publication (EPUB)	            application/epub+zip
+			.gif	Graphics Interchange Format (GIF)	        image/gif
+			.htm    HyperText Markup Language (HTML)	        text/html
+			.html	HyperText Markup Language (HTML)	        text/html
+			.ico	Icon format	                                image/x-icon
+			.ics	iCalendar format	                        text/calendar
+			.jar	Java Archive (JAR)	                        application/java-archive
+			.jpeg   JPEG images	                                image/jpeg
+			.jpg	JPEG images	                                image/jpeg
+			.js	    JavaScript (ECMAScript)	                    application/javascript
+			.json	JSON format	                                application/json
+			.mid	Musical Instrument Digital Interface (MIDI)	audio/midi
+			.mpeg	MPEG Video	                                video/mpeg
+			.mpkg	Apple Installer Package	                    application/vnd.apple.installer+xml
+			.odp	OpenDocuemnt presentation document	        application/vnd.oasis.opendocument.presentation
+			.ods	OpenDocuemnt spreadsheet document	        application/vnd.oasis.opendocument.spreadsheet
+			.odt	OpenDocument text document	                application/vnd.oasis.opendocument.text
+			.oga	OGG audio	                                audio/ogg
+			.ogv	OGG video	                                video/ogg
+			.ogx	OGG	                                        application/ogg
+			.pdf	Adobe Portable Document Format (PDF)	    application/pdf
+			.ppt	Microsoft PowerPoint	                    application/vnd.ms-powerpoint
+			.rar	RAR archive	                                application/x-rar-compressed
+			.rtf	Rich Text Format (RTF)	                    application/rtf
+			.sh	    Bourne shell script	                        application/x-sh
+			.svg	Scalable Vector Graphics (SVG)	            image/svg+xml
+			.swf	Adobe Flash document	                    application/x-shockwave-flash
+			.tar	Tape Archive (TAR)   	                    application/x-tar
+			.tif	Tagged Image File Format (TIFF)	            image/tiff
+			.ttf	TrueType Font	                            font/ttf
+			.vsd	Microsft Visio	                            application/vnd.visio
+			.wav	Waveform Audio Format	                    audio/x-wav
+			.weba	WEBM audio	                                audio/webm
+			.webm	WEBM video	                                video/webm
+			.webp	WEBP image	                                image/webp
+			.woff	Web Open Font Format (WOFF)	                font/woff
+			.woff2	Web Open Font Format (WOFF)	                font/woff2
+			.xhtml	XHTML	                                    application/xhtml+xml
+			.xls	Microsoft Excel	                            application/vnd.ms-excel
+			.xml	XML	                                        application/xml
+			.xul	XUL	                                        application/vnd.mozilla.xul+xml
+			.zip	ZIP archive	                                application/zip
+			.3gp	3GPP audio/video container	                video/3gpp
+			.3gp	3GPP audio container                        audio/3gpp
+			.3g2	3GPP2 audio/video container                 video/3gpp2
+			.3g2	3GPP2 audio container                       audio/3gpp2
+			.7z	    7-zip archive	                            application/x-7z-compressed
+		ENDTEXT
 	ENDFUNC
 
 	*----------------------------------------------------------------------------*
@@ -112,7 +193,7 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	ENDFUNC
 
 	*----------------------------------------------------------------------------*
-	FUNCTION addParameters(tcKey, tcValue)
+	FUNCTION addParameter(tcKey, tcValue)
 	* Agrega un elemento a los parametros
 	*----------------------------------------------------------------------------*
 		LOCAL lcKey
@@ -211,10 +292,10 @@ DEFINE CLASS ajaxRest AS CUSTOM
 				THIS.ResponseCnType = THIS.getOneHeader('Content-Type: '  ) 
 				THIS.ResponseCnLeng = THIS.getOneHeader('Content-Length: ') &&Si es distinto de "" es un archivo.
 
-				IF VARTYPE(THIS.ResponseCnLeng)='C' AND LEN(THIS.ResponseCnLeng)>1 THEN
-					lcMessage = .ResponseBody
-				ELSE
+				IF THIS.ResponseCnType$THIS.TypeNotArchive THEN
 					lcMessage = .ResponseText &&obtengo la repuesta
+				ELSE
+					lcMessage = .ResponseBody
 				ENDIF
 			ENDWITH
 
