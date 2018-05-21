@@ -34,5 +34,10 @@ vfp9.lnk
 *.zip
 *.7z
 
+# Archivos imagenes
+*.jpg
+*.jpeg
+*.gif
+
 # Carpetas que no deben controlarse
-/folder/
+/result_test/
