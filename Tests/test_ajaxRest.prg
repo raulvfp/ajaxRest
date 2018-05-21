@@ -75,39 +75,6 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 	ENDFUNC
 
 	*--------------------------------------------------------------------
-	FUNCTION testPost_with_Header_and_Body_using_json
-	* Note: A continuación detallo el POST solicitado según la doc de dropbox 
-	*
-	* POST /2/files/list_folder
-	* Host: https://api.dropboxapi.com
-	* User-Agent: api-explorer-client
-	* Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d
-	* Content-Type: application/json
-	* {
-	*     "path": ""
-	* }
-	*--------------------------------------------------------------------
-		LOCAL lcExpectedValue, lcResponseValue
-		lcExpectedValue = ''
-		lcResponseValue = ''
-
-		THIS.oObject.urlRequest = 'https://api.dropboxapi.com/2/files/list_folder'
-		THIS.oObject.method     = 'POST'
-		THIS.oObject.addHeader  ("Content-Type", 'application/json')
-		THIS.oObject.addHeader  ("authorization", 'Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d')
-		TEXT TO THIS.oObject.Body PRETEXT 15 TEXTMERGE NOSHOW
-{
-	"path":""
-}
-		ENDTEXT		
-
-		lcResponseValue = THIS.oObject.SEND()
-		THIS.MessageOut('Valor recibido: '+lcResponseValue)
-		THIS.MessageOut('Valor de Status: '+TRANSFORM(THIS.oObject.status))
-		THIS.AssertFalse(EMPTY(lcResponseValue),'Error no se recibio una devolucion')
-	ENDFUNC
-
-	*--------------------------------------------------------------------
 	FUNCTION test_catchExcepcion_MetodoErroneo
 	* Note: Compruebo el correcto funcionamiento con la clase catchExcepcion
 	*--------------------------------------------------------------------
@@ -147,7 +114,7 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 	ENDFUNC
 
 	*--------------------------------------------------------------------
-	FUNCTION test_GET_recepciondeunaImagen
+	FUNCTION testGET_recepciondeunaImagen
 	* Note: pruebo la recepcion de una image. La guardo en la carpeta 
 	* images
 	* Del primer GET, recibo un json con una direccion randon de la imagen a descargar.
@@ -213,6 +180,131 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		lcNameFile = "cat"+SYS(3)+".jpg"
 		STRTOFILE(lcResponseValue,'images\'+lcNameFile)
 	ENDFUNC
+
+	*--------------------------------------------------------------------
+	FUNCTION testPOST_DROPBOX_with_Header_and_Body_using_json
+	* Note: A continuación detallo el POST solicitado según la doc de dropbox 
+	*
+	* POST /2/files/list_folder
+	* Host: https://api.dropboxapi.com
+	* User-Agent: api-explorer-client
+	* Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d
+	* Content-Type: application/json
+	* {
+	*     "path": ""
+	* }
+	*--------------------------------------------------------------------
+		LOCAL lcExpectedValue, lcResponseValue
+		lcExpectedValue = ''
+		lcResponseValue = ''
+
+		WITH THIS.oObject
+			.urlRequest = 'https://api.dropboxapi.com/2/files/list_folder'
+			.method     = 'POST'
+			.addHeader  ("Content-Type", 'application/json')
+			.addHeader  ("authorization", 'Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d')
+			TEXT TO .Body PRETEXT 15 TEXTMERGE NOSHOW
+{
+	"path":""
+}
+			ENDTEXT		
+			lcResponseValue = .SEND()
+		ENDWITH
+
+		*STRTOFILE(lcResponseValue,'dropbox.list_folder.txt')
+		THIS.MessageOut('Valor recibido: '+lcResponseValue)
+		THIS.MessageOut('Valor de Status: '+TRANSFORM(THIS.oObject.status))
+		THIS.AssertFalse(EMPTY(lcResponseValue),'Error no se recibio una devolucion')
+	ENDFUNC
+
+	*--------------------------------------------------------------------
+	FUNCTION testPOST_DROPBOX_SearchFile
+	* Note: Busca un archivo en una carpeta especifica
+	* https://dropbox.github.io/dropbox-api-v2-explorer/#files_search
+	* Command cURL:
+	* -------------
+	* curl -X POST https://api.dropboxapi.com/2/files/search \
+  	*      --header 'Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d' \
+  	*      --header 'Content-Type: application/json' \
+  	*      --data '{"path":"","query":"test01.txt"}'
+	*--------------------------------------------------------------------
+		LOCAL lcResponseValue
+		lcResponseValue = ''
+		WITH THIS.oObject
+			.method     = 'POST'
+			.urlRequest = 'https://api.dropboxapi.com/2/files/search'
+			.addHeader  ('Authorization','Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d')
+			.addHeader  ('Content-Type','application/json')
+			.body       = '{"path":"","query":"test01.txt"}'
+			lcResponseValue = .SEND()
+		ENDWITH
+
+		*STRTOFILE(lcResponseValue,'dropbox.searchFile_OK.txt')
+		THIS.MessageOut(lcResponseValue)
+
+		lcExpectedValue = '{"matches": [], "more": false, "start": 0}'
+		WITH THIS.oObject
+			.method     = 'POST'
+			.urlRequest = 'https://api.dropboxapi.com/2/files/search'
+			.addHeader  ('Authorization','Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d')
+			.addHeader  ('Content-Type','application/json')
+			.body       = '{"path":"","query":"noexiste.txt"}'
+			lcResponseValue = .SEND()
+		ENDWITH
+		THIS.AssertEquals(lcExpectedValue, lcResponseValue, 'ERROR: se esperaba otro valor')
+		*STRTOFILE(lcResponseValue,'dropbox.searchFile_ERROR.txt')
+		THIS.MessageOut(lcResponseValue)
+	ENDFUNC
+
+	*--------------------------------------------------------------------
+	FUNCTION testPOST_DROPBOX_uploadFile
+	* Note: Sube un archivo al dropbox.
+	* https://www.dropbox.com/developers/documentation/http/documentation#files-upload
+	* Command cURL:
+	* -------------
+	*	curl -X POST https://content.dropboxapi.com/2/files/upload \
+	* 		--header 'Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d' \
+	* 		--header 'Content-Type: application/octet-stream' \
+	* 		--header 'Dropbox-API-Arg: {"path":"/atari-et-video-game-howard-desk.jpg","autorename":false,"mode":{".tag":"add"},"mute":false}' \
+	* 		--data-binary @'atari-et-video-game-howard-desk.jpg'
+	*
+	* Command HTTP:
+	* ------------
+	* POST /2/files/upload
+	* Host: https://content.dropboxapi.com
+	* User-Agent: api-explorer-client
+	* Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d
+	* Content-Type: application/octet-stream
+	* Dropbox-API-Arg: {"path":"/atari-et-video-game-howard-desk.jpg","autorename":false,"mode":{".tag":"add"},"mute":false}
+	* Content-Length: 48750
+	*
+	* --- (content of atari-et-video-game-howard-desk.jpg goes here) ---
+	*--------------------------------------------------------------------
+		LOCAL lcResponseValue, lcFileName, lcFileValue, lcFileSize
+		lcResponseValue = ''
+		lcFileName  = 'atari.jpg'
+		lcFileValue = FILETOSTR(lcFileName)
+		lcFileSize  = LEN(lcFileValue)
+		WITH THIS.oObject
+			.method     = 'POST'
+			.urlRequest = 'https://content.dropboxapi.com/2/files/upload'
+			.addHeader  ('Authorization','Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d')
+			.addHeader  ('Content-Type','application/octet-stream')
+			lcParamJson = '{"path":"/';
+							+lcFileName;
+							+'","autorename":false,"mode":{".tag":"add"},"mute":false}' 
+			THIS.MessageOut(lcParamJson)
+			.addHeader  ('Dropbox-API-Arg', lcParamJson)
+			.addHeader  ('Content-Length',TRANSFORM(lcFileSize))
+			.body       = lcFileValue 
+			lcResponseValue = .SEND()
+		ENDWITH
+
+		*STRTOFILE(lcResponseValue,'dropbox.uploadFile.txt')
+		THIS.MessageOut(lcResponseValue)
+
+	ENDFUNC
+
 
 ENDDEFINE
 *----------------------------------------------------------------------

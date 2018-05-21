@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
-		<setting>=SEEK("TEST_AJAXREST                                                                                                 TESTPOST_WITH_HEADER_AND_BODY_USING_JSON                                                                                          ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("TEST_AJAXREST                                                                                                 TESTPOST_DROPBOX_SEARCHFILE                                                                                                       ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
@@ -191,6 +191,6 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
-		<setting>THIS.nSplitterPosition = 226</setting>
+		<setting>THIS.nSplitterPosition = 252</setting>
 	</foxunitpersist>
 </VFPData>
