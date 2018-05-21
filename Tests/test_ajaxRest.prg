@@ -182,7 +182,7 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 	ENDFUNC
 
 	*--------------------------------------------------------------------
-	FUNCTION test_POST_DROPBOX_with_Header_and_Body_using_json
+	FUNCTION testPOST_DROPBOX_with_Header_and_Body_using_json
 	* Note: A continuación detallo el POST solicitado según la doc de dropbox 
 	*
 	* POST /2/files/list_folder
@@ -344,6 +344,46 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		ENDWITH
 
 		*STRTOFILE(lcResponseValue,'dropbox.createFolder.txt')
+		THIS.MessageOut(lcResponseValue)
+	ENDFUNC
+
+	*--------------------------------------------------------------------
+	FUNCTION testPOST_DROPBOX_deleteFolder
+	* Note: Elimina una carpeta en la nube de DROPBOX.
+	* https://www.dropbox.com/developers/documentation/http/documentation#files-delete_v2
+	*
+	* Command cURL:
+	* -------------
+	* curl -X POST https://api.dropboxapi.com/2/files/delete_v2 \
+	* 		--header 'Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d' \
+	* 		--header 'Content-Type: application/json' \
+	* 		--data '{"path":"/creada desde vfox"}'
+  	*
+  	* Command HTTP:
+	* ------------
+	* POST /2/files/delete_v2
+	* Host: https://api.dropboxapi.com
+	* User-Agent: api-explorer-client
+	* Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d
+	* Content-Type: application/json
+	* 
+	* {
+	*     "path": "/creada desde vfox"
+	* }
+	*--------------------------------------------------------------------
+		LOCAL lcResponseValue
+		lcResponseValue = ''
+		WITH THIS.oObject
+			.method    = 'POST'
+			.urlRequest= 'https://api.dropboxapi.com/2/files/delete_v2'
+			.addHeader  ('Authorization','Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d')
+			.addHeader  ('Content-Type','application/json')
+
+			.body      = '{"path": "/creada desde vfox"}'
+			lcResponseValue = .SEND()
+		ENDWITH
+
+		*STRTOFILE(lcResponseValue,'dropbox.deleteFolder.txt')
 		THIS.MessageOut(lcResponseValue)
 	ENDFUNC
 
