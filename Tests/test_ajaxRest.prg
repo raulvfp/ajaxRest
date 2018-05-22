@@ -387,6 +387,46 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		THIS.MessageOut(lcResponseValue)
 	ENDFUNC
 
+	*--------------------------------------------------------------------
+	FUNCTION testPOST_DROPBOX_filesDownload
+	* Note: Prepara la descarga de un archivo de la nube de DROPBOX
+	* https://www.dropbox.com/developers/documentation/http/documentation#files-download
+	*
+	* Command cURL:
+	* -------------
+	* curl -X POST https://content.dropboxapi.com/2/files/download \
+	* 		--header 'Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d' \
+	* 		--header 'Dropbox-API-Arg: {"path":"/test01.txt"}' 
+	*
+  	* Command HTTP:
+	* ------------
+	* POST /2/files/download
+	* Host: https://content.dropboxapi.com
+	* User-Agent: api-explorer-client
+	* Authorization: Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d
+	* Dropbox-API-Arg: {"path":"/test01.txt"}
+	*--------------------------------------------------------------------
+		LOCAL lcResponseValue
+		lcResponseValue = ''
+		lcFileName = 'atari.jpg'
+	*	lcFileName = 'test01.txt'
+		WITH THIS.oObject
+			.method    = 'POST'
+			.urlRequest= 'https://content.dropboxapi.com/2/files/download'
+			.addHeader  ('Authorization',   'Bearer 2BaNplW-NkAAAAAAAAAACnD2uYsT9R8Kvoy0hg-BWunSrO2M4awBI75Ggf0FEb-d')
+			.addHeader  ('Dropbox-API-Arg', '{"path":"/';
+												+lcFileName;
+												+'"}')
+			.addHeader  ('Content-Type',    'text/plain')
+
+			.body      = ''
+			lcResponseValue = .SEND()
+		ENDWITH
+
+		STRTOFILE(lcResponseValue,'result_test\tmp_'+lcFileName)
+		THIS.MessageOut(lcResponseValue)
+	ENDFUNC
+
 ENDDEFINE
 *----------------------------------------------------------------------
 * The three base class methods to call from your test methods are:

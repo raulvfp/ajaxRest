@@ -62,7 +62,7 @@ DEFINE CLASS ajaxRest AS CUSTOM
 		THIS.addHeader("Content-Type" ,'application/x-www-form-urlencoded')
 		THIS.addHeader("HttpVersion"  ,'1.1')
 		THIS.addHeader("UserAgent"    ,'FoxPro/9.0')
-		THIS.TypeNotArchive = 'application/json,text/plain'
+		THIS.TypeNotArchive = 'application/json,text/plain,application/octet-stream'
 
 		TEXT TO loTiposdeMime NOSHOW 
 		*-- Tipos de Content-Type --*
@@ -286,7 +286,7 @@ application	Represents any kind of binary data.	                                
 				ENDFOR
 				
 				.SEND(THIS.Body)
-				
+
 				*--- Determino que tipo de repuesta recibi ---*
 				THIS.ResponseHeader = .getAllResponseHeaders
 				THIS.ResponseCnType = THIS.getOneHeader('Content-Type: '  ) 
