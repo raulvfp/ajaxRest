@@ -26,7 +26,7 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	*-- repuesta del servidor
 	readystate     = ''
 	responsebody   = ''
-	responseText   = ''
+	responseValue  = ''
 	status         = 0
 	ResponseHeader = ''
 	ResponseCnType = ''  &&Es el valor de Content-Type por el webservice, que identifica si es un archivo o no
@@ -245,7 +245,7 @@ application	Represents any kind of binary data.	                                
 	*----------------------------------------------------------------------------*
 		THIS.readystate     = ''
 		THIS.responsebody   = ''
-		THIS.responseText   = ''
+		THIS.responseValue  = ''
 		THIS.status         = 0
 		THIS.ResponseHeader = ''
 		THIS.ResponseCnType = ''  &&Es el valor de Content-Type por el webservice, que identifica si es un archivo o no
@@ -289,29 +289,34 @@ application	Represents any kind of binary data.	                                
 
 				*--- Determino que tipo de repuesta recibi ---*
 				THIS.ResponseHeader = .getAllResponseHeaders
-				THIS.ResponseCnType = THIS.getOneHeader('Content-Type: '  ) 
-				THIS.ResponseCnLeng = THIS.getOneHeader('Content-Length: ') &&Si es distinto de "" es un archivo.
+				THIS.ResponseCnType = .getResponseHeader('Content-Type:') 
+				THIS.ResponseCnLeng = .getResponseHeader('Content-Length:') &&Si es distinto de "" es un archivo.
 
-				IF THIS.ResponseCnType$THIS.TypeNotArchive THEN
-					lcMessage = .ResponseText &&obtengo la repuesta
-				ELSE
+				TRY 
+					IF VAL(THIS.ResponseCnLeng)=0 OR;
+						LEN(.ResponseText)=VAL(THIS.ResponseCnLeng)
+						lcMessage = .ResponseText
+					ELSE
+						lcMessage = .ResponseBody
+					ENDIF
+				CATCH TO loExAux
 					lcMessage = .ResponseBody
-				ENDIF
+				ENDTRY
 			ENDWITH
 
 		CATCH TO loEx
 			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
 		FINALLY
-			THIS.readystate  =loXMLHTTP.readystate
-			THIS.responsebody=loXMLHTTP.responseBody
-			THIS.responseText=lcMessage
-			THIS.status      =loXMLHTTP.status
-			THIS.statustext  =loXMLHTTP.statustext
+			THIS.readyState   =loXMLHTTP.readyState
+			THIS.responseBody =loXMLHTTP.responseBody
+			THIS.responseValue=lcMessage
+			THIS.status       =loXMLHTTP.status
+			THIS.statusText   =loXMLHTTP.statusText
 
 			IF VARTYPE(loEx)='O' THEN  &&Si se produjo una excepcion, busco mostrar el status en el nivel superior
 				STRTOFILE(loXMLHTTP.getAllResponseHeaders, 'loghttp.log', 1)
 				loEx.userValue = '{"status": ' + TRANSFORM(THIS.status) ;
-								 +', "statustext": "'+THIS.statustext+'"';
+								 +', "statusText": "'+THIS.statusText+'"';
 								 +'}'
 			ENDIF
 

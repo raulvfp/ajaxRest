@@ -239,7 +239,8 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 			lcResponseValue = .SEND()
 		ENDWITH
 
-		*STRTOFILE(lcResponseValue,'dropbox.searchFile_OK.txt')
+		STRTOFILE(lcResponseValue,'dropbox.searchFile_OK.txt')
+		THIS.MessageOut('Repuesta de la primera consulta: ')
 		THIS.MessageOut(lcResponseValue)
 
 		lcExpectedValue = '{"matches": [], "more": false, "start": 0}'
@@ -251,8 +252,9 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 			.body       = '{"path":"","query":"noexiste.txt"}'
 			lcResponseValue = .SEND()
 		ENDWITH
+		THIS.MessageOut('Repuesta de la segunda consulta: ')
 		THIS.AssertEquals(lcExpectedValue, lcResponseValue, 'ERROR: se esperaba otro valor')
-		*STRTOFILE(lcResponseValue,'dropbox.searchFile_ERROR.txt')
+		STRTOFILE(lcResponseValue,'dropbox.searchFile_ERROR.txt')
 		THIS.MessageOut(lcResponseValue)
 	ENDFUNC
 
@@ -283,10 +285,12 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		LOCAL lcResponseValue, lcFileName, lcFileValue, lcFileSize
 		lcResponseValue = ''
 		lcFileName  = 'atari.jpg'
+		lcFileName  = 'contratos.txt'
+		*lcFileName  = 'Primeros.pdf'
 		lcFileValue = FILETOSTR(lcFileName)
 		lnFileSize  = LEN(lcFileValue)
 		lnMaxSize   = 150*1000*1000 &&(150 Mb)
-		IF lnFileSize<lnMaxSize THEN
+		IF lnFileSize>lnMaxSize THEN
 			RETURN
 		ENDIF
 		WITH THIS.oObject
@@ -298,8 +302,8 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 							+lcFileName;
 							+'","autorename":false,"mode":{".tag":"add"},"mute":false}';
 						 )
-			.addHeader  ('Content-Length',TRANSFORM(lnFileSize))
-			.body       = lcFileValue 
+			.addHeader  ('Content-Length',TRANSFORM(lnFileSize)) 
+			.body       = lcFileValue
 			lcResponseValue = .SEND()
 		ENDWITH
 
@@ -408,8 +412,8 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 	*--------------------------------------------------------------------
 		LOCAL lcResponseValue
 		lcResponseValue = ''
+		*-- Descargo un JPG
 		lcFileName = 'atari.jpg'
-	*	lcFileName = 'test01.txt'
 		WITH THIS.oObject
 			.method    = 'POST'
 			.urlRequest= 'https://content.dropboxapi.com/2/files/download'
@@ -422,7 +426,28 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 			.body      = ''
 			lcResponseValue = .SEND()
 		ENDWITH
+		STRTOFILE(lcResponseValue,'result_test\tmp_'+lcFileName)
 
+		*-- Descargo un TXT
+		lcFileName = 'test01.txt'
+		WITH THIS.oObject
+			.addHeader  ('Dropbox-API-Arg', '{"path":"/';
+												+lcFileName;
+												+'"}')
+			lcResponseValue = .SEND()
+		ENDWITH
+		STRTOFILE(lcResponseValue,'result_test\tmp_'+lcFileName)
+
+		*-- Descargo un PDF
+		lcFileName = 'Primeros pasos con Dropbox.pdf'
+	*	lcFileName  = 'contratos.txt'
+	*	lcFileName  = 'Primeros.pdf'
+		WITH THIS.oObject
+			.addHeader  ('Dropbox-API-Arg', '{"path":"/';
+												+lcFileName;
+												+'"}')
+			lcResponseValue = .SEND()
+		ENDWITH
 		STRTOFILE(lcResponseValue,'result_test\tmp_'+lcFileName)
 		THIS.MessageOut(lcResponseValue)
 	ENDFUNC
