@@ -6,7 +6,7 @@
 *| Archivo principal del sistema
 *| Author......: Raúl Jrz (raul.jrz@gmail.com)
 *| Created.....: 19.05.2018 17:19
-*| Purpose.....: realizar conexiones ajax respetando los verbos
+*| Purpose.....: realizar conexiones ajax usando MSXML2.ServerXMLHTTP
 *|
 *| Revisions...: v1.00
 *|
@@ -24,6 +24,7 @@ DEFINE CLASS ajaxRest AS CUSTOM
 	Body           = ''
 
 	*-- repuesta del servidor
+	PROTECTED responseValue
 	readystate     = ''
 	responsebody   = ''
 	responseValue  = ''
@@ -261,7 +262,6 @@ application	Represents any kind of binary data.	                                
 		lcMessage = ''
 
 		loXMLHTTP = THIS.createConnection()
-		*	loXMLHTTP = CREATEOBJECT("MSXML2.XMLHTTP")
 		TRY
 			WITH loXMLHTTP AS MSXML2.XMLHTT
 				*--- Cargo los Parametros de la peticion --- *
@@ -323,6 +323,13 @@ application	Represents any kind of binary data.	                                
 			loXMLHTTP = NULL
 		ENDTRY
 		RETURN lcMessage
+	ENDFUNC
+
+	*----------------------------------------------------------------------------*
+	FUNCTION getResponse()
+	* Devuelve el response de la comunicacion.
+	*----------------------------------------------------------------------------*
+		RETURN THIS.responseValue
 	ENDFUNC
 
 	*----------------------------------------------------------------------------*
