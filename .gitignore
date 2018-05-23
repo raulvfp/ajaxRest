@@ -41,3 +41,4 @@ vfp9.lnk
 
 # Carpetas que no deben controlarse
 /result_test/
+/download/
