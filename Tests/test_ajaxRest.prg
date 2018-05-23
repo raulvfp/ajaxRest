@@ -452,6 +452,30 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		THIS.MessageOut(lcResponseValue)
 	ENDFUNC
 
+	*--------------------------------------------------------------------
+	FUNCTION testSaveFile
+	* Note:
+	*--------------------------------------------------------------------
+		LOCAL lcFolder, lcFile
+		lcFolder = SYS(5)+ADDBS(CURDIR())+'download'
+		lcFile   = 'cat'+SYS(3)+'.jpg'
+
+		*--- 
+		WITH THIS.oObject
+			.method      = 'GET'
+			.urlRequest  = 'http://thecatapi.com/api/images/get'
+			.addParameter('format'          ,'src')
+			.addParameter('results_per_page','1')
+			.SEND()
+
+			.pathDownload = lcFolder
+			.saveFile(lcFile)
+		ENDWITH
+
+		THIS.AssertTrue(FILE(ADDBS(lcFolder)+lcFile),;
+						'ERROR no se creo el archivo: '+lcFile)
+	ENDFUNC
+
 ENDDEFINE
 *----------------------------------------------------------------------
 * The three base class methods to call from your test methods are:
