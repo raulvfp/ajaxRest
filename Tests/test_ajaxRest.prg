@@ -460,8 +460,14 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		lcFolder = SYS(5)+ADDBS(CURDIR())+'download'
 		lcFile   = 'cat'+SYS(3)+'.jpg'
 
+		lcPathLog= SYS(5)+ADDBS(CURDIR())+'log'
+		lcFileLog= ''
 		*--- 
 		WITH THIS.oObject
+			.PathLog     = lcPathLog
+			.nameLog     = lcFileLog
+			.isLogger    = .T.
+
 			.method      = 'GET'
 			.urlRequest  = 'http://thecatapi.com/api/images/get'
 			.addParameter('format'          ,'src')
