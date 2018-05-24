@@ -15,13 +15,22 @@
 DEFINE CLASS ajaxRest AS CUSTOM
 *
 *-----------------------------------------------------------------------------------*
-	PROTECTED loHeader, loParameter, TypeNotArchive
-	TypeNotArchive = ''  &&Content-Type que no son tratados como archivos.
-	loHeader       = ''
-	bRelanzarThrow = .T. &&Relanza la excepcion al nivel superior
+	bRelanzarThrow = .T. &&Relanza la excepcion al nivel superior, usado por catchException
+
+	PROTECTED loHeader, loParameter
+	loHeader       = ''  &&Objeto que contiene las cabeceras de la conexion
+	loParameter    = ''  &&Objeto que contiene los parametros que se pasara a la url
+
 	urlRequest     = ''
 	method         = ''  &&Posibles valores: POST,GET,PUT,DELETE,HEAD,CONNECT,OPTIONS,TRACE,PATCH
 	Body           = ''
+	pathDownload   = ''  &&Path en donde se descargaran los archivos
+	pathUpload     = ''  &&Path en donde recide los archivos a subir
+	pathLog        = ''  &&Path en donde se guarda los log, si es que esta activo el log.
+	nameLog        = 'ajaxRest.log' &&Es el log de los procesos
+	isVerbose      = .F. &&Si hay eco o no en la pantalla de las acciones.
+	isLogger       = .F. &&indica si lleva un log con los registros de los sucesos.
+
 
 	*-- repuesta del servidor
 	PROTECTED responseValue
@@ -63,7 +72,7 @@ DEFINE CLASS ajaxRest AS CUSTOM
 		THIS.addHeader("Content-Type" ,'application/x-www-form-urlencoded')
 		THIS.addHeader("HttpVersion"  ,'1.1')
 		THIS.addHeader("UserAgent"    ,'FoxPro/9.0')
-		THIS.TypeNotArchive = 'application/json,text/plain,application/octet-stream'
+		*THIS.TypeNotArchive = 'application/json,text/plain,application/octet-stream'
 
 		TEXT TO loTiposdeMime NOSHOW 
 		*-- Tipos de Content-Type --*
@@ -150,11 +159,15 @@ application	Represents any kind of binary data.	                                
 	* Este metodo ASSIGN me permite validar lo que el verbo HTTP que se usara 
 	* para comunicarse con el servidor REST
 	*----------------------------------------------------------------------------*
-		LOCAL lcListMethod
+		LOCAL lcListMethod, lcMessage
+		lcMessage = 'Error, el verbo no es el correcto'
 		TRY
 			lcListMethod = 'POST,GET,PUT,DELETE,HEAD,CONNECT,OPTIONS,TRACE,PATCH'
 			IF !(teValue $ lcListMethod) THEN
-				THROW 'Error, el verbo no es el correcto'
+				IF THIS.isVerbose THEN
+					WAIT WINDOWS lcMessage
+				ENDIF
+				THROW lcMessage
 			ENDIF
 			THIS.method = teValue
 		CATCH TO loEx
@@ -261,6 +274,7 @@ application	Represents any kind of binary data.	                                
 			lcKey, lnCnt, lnInd
 		lcMessage = ''
 
+		THIS.logger('=====[request]=====')
 		loXMLHTTP = THIS.createConnection()
 		TRY
 			WITH loXMLHTTP AS MSXML2.XMLHTT
@@ -275,6 +289,7 @@ application	Represents any kind of binary data.	                                
 				IF !EMPTY(lcParameter) THEN
 					lcParameter = "?"+lcParameter                       &&Le agrego antes de los parametros el '?' 
 				ENDIF
+				THIS.logger('Parameters: '+lcParameter)
 
 				*--- Abro la conexion, enviando los parametros ---*
 				.OPEN(THIS.method, THIS.urlRequest+lcParameter, .F.)
@@ -283,8 +298,10 @@ application	Represents any kind of binary data.	                                
 				FOR lnInd = 1 TO lnCnt
 					lcKey  = laProperties[lnInd]
 					.setRequestHeader(STRCONV(lcKey, 16), THIS.loHeader.&lcKey)
+					THIS.logger('Header: '+STRCONV(lcKey, 16)+" "+THIS.loHeader.&lcKey)
 				ENDFOR
 				
+				THIS.logger('Body: '+CHR(13)+CHR(10)+THIS.Body)
 				.SEND(THIS.Body)
 
 				*--- Determino que tipo de repuesta recibi ---*
@@ -302,6 +319,10 @@ application	Represents any kind of binary data.	                                
 				CATCH TO loExAux
 					lcMessage = .ResponseBody
 				ENDTRY
+
+				THIS.logger('=====[response]=====')
+				THIS.logger(THIS.ResponseHeader)
+				THIS.logger(lcMessage)
 			ENDWITH
 
 		CATCH TO loEx
@@ -323,6 +344,63 @@ application	Represents any kind of binary data.	                                
 			loXMLHTTP = NULL
 		ENDTRY
 		RETURN lcMessage
+	ENDFUNC
+
+	*----------------------------------------------------------------------------*
+	FUNCTION saveFile(tcNameFile)
+	* Si lo que se recibe es un archivo, lo guarda en el THIS.pathDownload
+	*----------------------------------------------------------------------------*
+		LOCAL lnReturn, lcNameFile
+		lnReturn = -1
+		TRY
+			*-- Verifico si existe el directorio, de lo contrario lo creo.
+			THIS.pathDownload = THIS.isFolderExist(THIS.pathDownload)
+
+			*-- Verifico el nombre del archivo, si no tengo genero uno con extension tmp.
+			lcNameFile = IIF(PCOUNT()=1, ALLTRIM(tcNameFile), SYS(3)+'.tmp')
+			lnReturn   = STRTOFILE(THIS.getResponse(), ADDBS(THIS.pathDownload)+lcNameFile, .F.)
+		CATCH TO loEx
+			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
+		ENDTRY
+		RETURN lnReturn
+	ENDFUNC
+	
+	*----------------------------------------------------------------------------*
+	PROTECTED FUNCTION isFolderExist(tcFolder)
+	* Verifica que exista la carpeta.
+	*----------------------------------------------------------------------------*
+		LOCAL lcFolder
+		TRY
+			lcFolder = ALLTRIM(tcFolder)
+			IF !EMPTY(lcFolder) THEN
+				IF RIGHT(lcFolder,1) = '\' THEN
+					lcFolder = SUBSTR(lcFolder,1,LEN(lcFolder)-1)
+				ENDIF
+
+				IF !DIRECTORY(lcFolder) THEN
+					MKDIR (lcFolder)
+				ENDIF
+			ENDIF
+		CATCH TO loEx
+			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
+		ENDTRY
+		RETURN lcFolder
+	ENDFUNC
+
+	*----------------------------------------------------------------------------*
+	PROTECTED FUNCTION logger(tcMessageLog)
+	* Guarda una log del proceso en un archivo.
+	*----------------------------------------------------------------------------*
+		TRY
+			IF THIS.isLogger THEN
+				THIS.pathLog = THIS.isFolderExist(THIS.pathLog)
+				THIS.nameLog = IIF(EMPTY(THIS.nameLog),'ajaxrest.log',ALLTRIM(THIS.nameLog))
+				STRTOFILE(tcMessageLog+CHR(13)+CHR(10), ADDBS(THIS.pathLog)+THIS.nameLog,.T.)
+			ENDIF
+
+		CATCH TO loEx
+			oTmp = CREATEOBJECT('catchException',THIS.bRelanzarThrow)
+		ENDTRY
 	ENDFUNC
 
 	*----------------------------------------------------------------------------*
