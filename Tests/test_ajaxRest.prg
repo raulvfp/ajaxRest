@@ -28,7 +28,7 @@ DEFINE CLASS test_ajaxRest as FxuTestCase OF FxuTestCase.prg
 		*THIS.MessageOut('Default...: '+SET("DEFAULT"))
 		*THIS.MessageOut('============================================================')
 
-		SET PROCEDURE TO (ADDBS(SYS(5)+CURDIR())+'src\ajaxRest.prg') ADDITIVE
+		SET PROCEDURE TO E:\Shared\Project\librery\ajaxRest\src\ajaxRest.prg ADDITIVE
 		SET PROCEDURE TO E:\Shared\Project\librery\catchException\src\catchException.prg ADDITIVE
 		SET PATH TO (THIS.oldPath +";"+ADDBS(SYS(5)+CURDIR())+'src ')
 		THIS.MessageOut('Procedures: '+STRTRAN(SET("PROCEDURE"),";",CHR(13)+SPACE(12)))

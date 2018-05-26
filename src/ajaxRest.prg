@@ -306,8 +306,8 @@ application	Represents any kind of binary data.	                                
 
 				*--- Determino que tipo de repuesta recibi ---*
 				THIS.ResponseHeader = .getAllResponseHeaders
-				THIS.ResponseCnType = .getResponseHeader('Content-Type:') 
-				THIS.ResponseCnLeng = .getResponseHeader('Content-Length:') &&Si es distinto de "" es un archivo.
+				THIS.ResponseCnType = THIS.getOneHeader('Content-Type:') 
+				THIS.ResponseCnLeng = THIS.getOneHeader('Content-Length:') &&Si es distinto de "" es un archivo.
 
 				TRY 
 					IF VAL(THIS.ResponseCnLeng)=0 OR;

@@ -67,7 +67,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
-		<setting>THIS.pgfDetails.ActivePage = 2</setting>
+		<setting>THIS.pgfDetails.ActivePage = 1</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
@@ -95,7 +95,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
-		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .F.</setting>
+		<setting>THIS.pgfDetails.pgFailuresAndErrors.FontBold = .T.</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
-		<setting>=SEEK("TEST_AJAXREST                                                                                                 TESTSAVEFILE                                                                                                                      ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("TEST_AJAXREST                                                                                                 TESTPOST_DROPBOX_UPLOADFILE                                                                                                       ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
