@@ -9,9 +9,10 @@
 			"role": "Developer"
 		}
 	],
-	"version": "2.1.0",
+	"version": "1.0.0",
 	"require": {
 		"vfp": "^9.00",
+		"raulvfp/catchException": "1.0.*"
 	},
 	"repositories": [
 		{

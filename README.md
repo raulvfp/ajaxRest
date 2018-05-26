@@ -31,8 +31,9 @@ https://github.com/raulvfp/catchException
     Para el control de las excepciones.
 
 ## Installation
+```
 git clone https://github.com/raulvfp/ajaxRest.git ajaxRest
-
+```
 
 ## Usage
 **Properties:**

@@ -35,7 +35,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
-		<setting>THIS.Left = 261</setting>
+		<setting>THIS.Left = 0</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
@@ -43,7 +43,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
-		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,1017,803)</setting>
+		<setting>THIS.Width = IIF(VERSION(5)&gt;=900,880,803)</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
@@ -159,7 +159,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
-		<setting>THIS.grdTests.COLUMN2.Width = 760</setting>
+		<setting>THIS.grdTests.COLUMN2.Width = 623</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
@@ -167,7 +167,7 @@
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
-		<setting>=SEEK("TEST_AJAXREST                                                                                                 TESTPOST_DROPBOX_SEARCHFILE                                                                                                       ",THIS.icGridRS,"TCLName")</setting>
+		<setting>=SEEK("TEST_AJAXREST                                                                                                 TESTSAVEFILE                                                                                                                      ",THIS.icGridRS,"TCLName")</setting>
 	</foxunitpersist>
 	<foxunitpersist>
 		<userid>Admin</userid>
